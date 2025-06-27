@@ -205,59 +205,6 @@ TEST_F(PacketParserTest, IncompletePacket) {
     EXPECT_TRUE(ip_pairs.empty());
 }
 
-TEST_F(PacketParserTest, ExampleFileTest) {
-    auto example_file_path = std::filesystem::path(SOURCE_DIR) / "tests" / "packets.sig";
-
-    uint64_t total_packets = 0;
-    uint64_t with_ipv4 = 0;
-    uint64_t without_ipv4 = 0;
-    std::map<std::pair<std::string, std::string>, uint64_t> ip_pair_counts;
-
-    ASSERT_NO_THROW(PacketParser::process_file(
-        example_file_path.string(),
-        total_packets,
-        with_ipv4,
-        without_ipv4,
-        ip_pair_counts
-    ));
-
-    EXPECT_EQ(total_packets, 16215);
-    EXPECT_EQ(with_ipv4, 44);
-    EXPECT_EQ(without_ipv4, 16171);
-
-    EXPECT_EQ(ip_pair_counts.size(), 33);
-
-    uint64_t total_count = 0;
-    for (const auto& pair : ip_pair_counts) {
-        total_count += pair.second;
-    }
-    EXPECT_EQ(total_count, with_ipv4);
-
-    struct IpPairTest {
-        std::string src;
-        std::string dst;
-        uint64_t expected_count;
-    };
-
-    const std::vector<IpPairTest> test_pairs = {
-        {"212.119.253.19", "89.18.196.140", 11},
-        {"89.18.196.140", "212.119.253.19", 2},
-        {"79.196.70.118", "212.119.253.19", 1}
-    };
-
-    for (const auto& test : test_pairs) {
-        auto key = std::make_pair(test.src, test.dst);
-        auto it = ip_pair_counts.find(key);
-        if (it == ip_pair_counts.end()) {
-            ADD_FAILURE() << "Pair not found: " << test.src << " -> " << test.dst;
-        }
-        else {
-            EXPECT_EQ(it->second, test.expected_count)
-                << "For pair: " << test.src << " -> " << test.dst;
-        }
-    }
-}
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

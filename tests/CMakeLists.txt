@@ -4,10 +4,6 @@ add_executable(tests
     main.cpp
 )
 
-target_compile_definitions(tests PRIVATE 
-    SOURCE_DIR="${CMAKE_SOURCE_DIR}"
-)
-
 target_link_libraries(tests PRIVATE
     packetparser
     GTest::gtest
