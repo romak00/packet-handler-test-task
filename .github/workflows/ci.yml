@@ -9,20 +9,21 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: install deps
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake
+      - name: install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libgtest-dev googletest
 
-    - name: build
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
-    
-    - name: run tests
-      run: ./bin/tests
+      - name: build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_TESTS=ON
+          make
+      
+      - name: run tests
+        run: ./bin/tests
